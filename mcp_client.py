@@ -4,6 +4,16 @@ from pathlib import Path
 from mcp import ClientSession, StdioServerParameters, stdio_client
 
 
+def get_tool_result(result, label: str) -> str:
+    """安全提取工具调用结果，检查 isError 和空 content。"""
+    if result.isError:
+        msg = result.content[0].text if result.content else "未知错误"
+        return f"[ERROR] {msg}"
+    if not result.content:
+        return "[ERROR] 返回空结果"
+    return result.content[0].text
+
+
 async def main():
     # 启动 server 进程，通过 stdio 通信
     server_script = str(Path(__file__).parent / "mcp_server.py")
@@ -27,15 +37,15 @@ async def main():
 
             # 调用 add 工具
             result = await session.call_tool("add", {"a": 10, "b": 20})
-            print("add(10, 20) =>", result.content[0].text)
+            print("add(10, 20) =>", get_tool_result(result, "add"))
 
             # 调用 multiply 工具
             result = await session.call_tool("multiply", {"a": 6, "b": 7})
-            print("multiply(6, 7) =>", result.content[0].text)
+            print("multiply(6, 7) =>", get_tool_result(result, "multiply"))
 
             # 调用 greet 工具
             result = await session.call_tool("greet", {"name": "Claude"})
-            print("greet('Claude') =>", result.content[0].text)
+            print("greet('Claude') =>", get_tool_result(result, "greet"))
 
 
 if __name__ == "__main__":

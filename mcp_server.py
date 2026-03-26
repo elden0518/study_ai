@@ -4,13 +4,13 @@ mcp = FastMCP("计算器服务")
 
 @mcp.tool()
 def add(a: float, b: float) -> str:
-    """计算两个数字的和"""
-    return f"{a} + {b} = {a + b}"
+    """计算两个数字的和，返回计算结果"""
+    return str(a + b)
 
 @mcp.tool()
 def multiply(a: float, b: float) -> str:
-    """计算两个数字的乘积"""
-    return f"{a} × {b} = {a * b}"
+    """计算两个数字的乘积，返回计算结果"""
+    return str(a * b)
 
 @mcp.tool()
 def greet(name: str) -> str:

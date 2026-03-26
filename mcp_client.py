@@ -22,13 +22,15 @@ async def main():
         args=[server_script],     # 绝对路径，不依赖工作目录
     )
 
+    TIMEOUT = 10  # 每个 MCP 操作的超时秒数
+
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             # 初始化
-            await session.initialize()
+            await asyncio.wait_for(session.initialize(), timeout=TIMEOUT)
 
             # 列出所有工具
-            tools_result = await session.list_tools()
+            tools_result = await asyncio.wait_for(session.list_tools(), timeout=TIMEOUT)
             print("=== 可用工具 ===")
             for tool in tools_result.tools:
                 print(f"  - {tool.name}: {tool.description}")
@@ -36,15 +38,21 @@ async def main():
             print()
 
             # 调用 add 工具
-            result = await session.call_tool("add", {"a": 10, "b": 20})
+            result = await asyncio.wait_for(
+                session.call_tool("add", {"a": 10, "b": 20}), timeout=TIMEOUT
+            )
             print("add(10, 20) =>", get_tool_result(result, "add"))
 
             # 调用 multiply 工具
-            result = await session.call_tool("multiply", {"a": 6, "b": 7})
+            result = await asyncio.wait_for(
+                session.call_tool("multiply", {"a": 6, "b": 7}), timeout=TIMEOUT
+            )
             print("multiply(6, 7) =>", get_tool_result(result, "multiply"))
 
             # 调用 greet 工具
-            result = await session.call_tool("greet", {"name": "Claude"})
+            result = await asyncio.wait_for(
+                session.call_tool("greet", {"name": "Claude"}), timeout=TIMEOUT
+            )
             print("greet('Claude') =>", get_tool_result(result, "greet"))
 
 

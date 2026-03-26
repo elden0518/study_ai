@@ -1,12 +1,15 @@
 import asyncio
+import sys
+from pathlib import Path
 from mcp import ClientSession, StdioServerParameters, stdio_client
 
 
 async def main():
     # 启动 server 进程，通过 stdio 通信
+    server_script = str(Path(__file__).parent / "mcp_server.py")
     server_params = StdioServerParameters(
-        command=".venv/Scripts/python",
-        args=["mcp_server.py"],
+        command=sys.executable,   # 使用当前 Python 解释器，跨平台兼容
+        args=[server_script],     # 绝对路径，不依赖工作目录
     )
 
     async with stdio_client(server_params) as (read, write):
